@@ -11,6 +11,7 @@
 using namespace std;
 using namespace cv;
 
+//宽字节类型转化为窄字节类型
 char* wcharTochar(const wchar_t* _wchar)
 {
 	char* _char;
@@ -20,11 +21,12 @@ char* wcharTochar(const wchar_t* _wchar)
 	_char[len] = '\0';
 	return _char;
 }
-
-int main()
+// 通过文件选择框获得选择文件的路径以及名字
+char* guigetfilename()
 {
 	TCHAR szBuffer[MAX_PATH] = { 0 };
 	OPENFILENAME ofn = { 0 };
+	wchar_t* t = ofn.lpstrFile;
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = NULL;
 	ofn.lpstrFile = szBuffer;
@@ -36,10 +38,23 @@ int main()
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 	if (GetOpenFileName(&ofn))
 	{
-		wchar_t *t = ofn.lpstrFile;
-		cout << wcharTochar(t) << endl;
-		
+		Mat HazeImage;//有雾的图像
+		Mat Image;//去雾的图像
+		t = ofn.lpstrFile;
+		//cout << wcharTochar(t) << endl;
 	}
+	return wcharTochar(t);
+}
+int main()
+{
+	Mat hazeimage,deimage;//
+	//有雾图像的描述模型 I(x) = J(x)t(x) + A(1-t(x)) t(x)代表透射率，A：全局自然光
+	/*其中𝑡(𝒙) = 𝑒^−𝛽𝑑𝒙 代表光线通过媒介透射照到相机的过程中
+		没有被散射的比例，𝛽 : 大气的散射系数 𝑑 : 景深*/
+	/*定义暗通道：𝑱𝑑𝑎𝑟𝑘 𝒙 = min𝒚∈Ω(𝒙)( min𝑐∈{𝑟,𝑔,𝑏}𝑱𝑐(𝒚))*/
+	/*首先选取暗通道中最亮的0.1%像素，在这些像素中再选择灰度值最大的像素点作为大气光*/
+	cout << guigetfilename() << endl;
+
 	return 0;
    // image = imread();//读取原图像
     
